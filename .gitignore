@@ -1,0 +1,20 @@
+cat << 'EOF' > .gitignore
+# Node e React
+node_modules/
+dist/
+npm-debug.log*
+
+# Java e Spring Boot
+target/
+*.class
+*.jar
+*.war
+
+# IDEs e SO
+.vscode/
+.idea/
+.DS_Store
+
+# Variáveis de ambiente
+.env
+EOF
