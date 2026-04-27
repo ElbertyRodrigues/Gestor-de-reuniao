@@ -22,7 +22,7 @@ export const Login = () => {
         throw new Error('Usuário não autorizado.');
       }
 
-      const response = await axios.post('/auth/login', {
+      const response = await axios.post('/api/auth/login', {
         email,
         password
       });
