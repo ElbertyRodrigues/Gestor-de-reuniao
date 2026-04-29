@@ -29,12 +29,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable())
-            // Adicionamos o CORS aqui
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/login").permitAll() // Verifique se o prefixo /api é necessário aqui
+                // Importante: Libera o OPTIONS para o CORS não barrar o upload
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                
+                // Rotas de Login (sem o prefixo /api, pois o Nginx já removeu)
                 .requestMatchers("/auth/login").permitAll()
+                
+                // Rota de Upload (também sem o /api)
+                .requestMatchers("/reunioes/upload").authenticated()
+                
                 .anyRequest().authenticated()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

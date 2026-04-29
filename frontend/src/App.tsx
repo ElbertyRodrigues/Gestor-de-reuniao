@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Login } from './pages/Login';
+import { Dashboard } from './pages/Dashboard'; // Certifique-se de importar aqui!
 
-// Componente para proteger rotas privadas
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
@@ -17,10 +17,7 @@ export const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={
             <PrivateRoute>
-              <div className="flex flex-col items-center justify-center min-h-screen bg-green-50">
-                <h1 className="text-3xl font-bold text-green-800">Painel de Gestão UFU</h1>
-                <p className="mt-4 text-gray-600">Você está autenticado com sucesso e a rota está protegida!</p>
-              </div>
+              <Dashboard /> {/* Aqui é onde a mágica acontece */}
             </PrivateRoute>
           } />
           <Route path="*" element={<Navigate to="/login" replace />} />
