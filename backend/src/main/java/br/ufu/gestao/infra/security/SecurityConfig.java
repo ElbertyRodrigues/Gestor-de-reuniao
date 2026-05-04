@@ -32,13 +32,13 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                // Importante: Libera o OPTIONS para o CORS não barrar o upload
+
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 
-                // Rotas de Login (sem o prefixo /api, pois o Nginx já removeu)
+
                 .requestMatchers("/auth/login").permitAll()
                 
-                // Rota de Upload (também sem o /api)
+              
                 .requestMatchers("/reunioes/upload").authenticated()
                 
                 .anyRequest().authenticated()
@@ -47,7 +47,7 @@ public class SecurityConfig {
             .build();
     }
 
-    // Trazemos o bean de CORS para cá
+  
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

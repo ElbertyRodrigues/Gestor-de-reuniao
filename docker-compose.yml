@@ -43,7 +43,6 @@ services:
     ports:
       - "80:80"
     volumes:
-      # Aqui injetamos o nosso nginx.conf para dentro do container
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - gestaoufu-network

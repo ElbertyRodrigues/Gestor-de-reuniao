@@ -1,100 +1,220 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { FiltrosState } from '../types/reuniao';
+import { FiltrosParticipantes } from '../components/FiltrosParticipantes';
+import { TabelaParticipantes } from '../components/TabelaParticipantes';
+import { useExport } from '../hooks/useExport';
 
 export const Dashboard = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
-  
-  // Hooks devem ficar sempre aqui no topo, nunca dentro de funções de clique
-  const { token, logout } = useAuth();
+  const [reunioes, setReunioes] = useState<any[]>([]);
+  const [reuniaoSelecionada, setReuniaoSelecionada] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [filtros, setFiltros] = useState<FiltrosState>({
+    nome: '', email: '', camera: null, mao: null, mudo: null,
+  });
+  const [totalFiltrado, setTotalFiltrado] = useState(0);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+  const { token, logout } = useAuth();
+  const { exportando, exportarCSVLocal } = useExport();
+
+  const carregarReunioes = async () => {
+    try {
+      const response = await axios.get('/api/reunioes', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReunioes(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error('Erro ao carregar lista', error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) carregarReunioes();
+  }, [token]);
+
+  const selecionarReuniao = async (id: number) => {
+    setLoading(true);
+    setFiltros({ nome: '', email: '', camera: null, mao: null, mudo: null });
+    try {
+      const response = await axios.get(`/api/reunioes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReuniaoSelecionada(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar detalhes', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      setMessage({ text: 'Por favor, selecione um arquivo primeiro.', type: 'error' });
-      return;
-    }
-
+    if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-
-    setUploading(true);
-    setMessage({ text: '', type: '' });
-
     try {
       await axios.post('/api/reunioes/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}` 
+          Authorization: `Bearer ${token}`,
         },
       });
-
-      setMessage({ text: 'Arquivo importado com sucesso!', type: 'success' });
       setFile(null);
-    } catch (error: any) {
-      console.error(error);
-      const errorMsg = error.response?.data?.message || error.response?.data || 'Erro ao enviar arquivo.';
-      setMessage({ text: errorMsg, type: 'error' });
-    } finally {
-      setUploading(false);
+      carregarReunioes();
+      alert('Arquivo importado com sucesso!');
+    } catch (error) {
+      alert('Erro no upload');
     }
   };
 
+  const resumo = reuniaoSelecionada
+    ? {
+        titulo: reuniaoSelecionada.titulo,
+        horaInicio: reuniaoSelecionada.startTime,
+        horaTermino: reuniaoSelecionada.endTime,
+        duracao: reuniaoSelecionada.duracao,
+        tempoMedio: reuniaoSelecionada.tempoMedioParticipacao,
+        participantesAtendidos:
+          reuniaoSelecionada.participantesAtendidos ??
+          reuniaoSelecionada.participantes?.length ??
+          0,
+      }
+    : null;
+
+  const participantes: any[] = Array.isArray(reuniaoSelecionada?.participantes)
+    ? reuniaoSelecionada.participantes
+    : [];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <nav className="bg-green-800 text-white p-4 flex justify-between items-center shadow-md">
-        <h1 className="text-xl font-bold">Gestão UFU - Importação</h1>
-        <button onClick={logout} className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+      
+      <nav className="bg-green-900 text-white p-4 flex justify-between items-center shadow-md">
+        <h1 className="text-xl font-bold">Gestão UFU - Analisador de Reuniões</h1>
+        <button onClick={logout} className="bg-red-600 px-4 py-2 rounded text-sm">
           Sair
         </button>
       </nav>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Importar Relatório de Reunião
-          </h2>
-          
-          <div className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition cursor-pointer">
-              <input 
-                type="file" 
-                accept=".xlsx, .xls .csv"
-                onChange={handleFileChange}
-                className="hidden" 
-                id="file-upload"
-              />
-              <label htmlFor="file-upload" className="cursor-pointer block w-full">
-                <span className="text-gray-600 block">
-                  {file ? file.name : "Clique para selecionar o Excel do Teams"}
-                </span>
-              </label>
-            </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
-            {message.text && (
-              <div className={`p-3 rounded text-sm ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {message.text}
-              </div>
-            )}
-
+        
+        <div className="md:col-span-1 space-y-4">
+          <div className="bg-white p-4 rounded shadow border-t-4 border-green-600">
+            <h2 className="font-bold mb-3 text-sm">Importar Novo Relatório</h2>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files![0])}
+              className="text-xs w-full mb-2"
+            />
             <button
               onClick={handleUpload}
-              disabled={!file || uploading}
-              className={`w-full py-3 rounded-lg font-bold text-white transition
-                ${!file || uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-md'}
-              `}
+              className="w-full bg-green-700 text-white py-2 rounded text-sm font-bold"
             >
-              {uploading ? 'Processando...' : 'Enviar Relatório'}
+              Subir Excel
             </button>
           </div>
-          <p className="mt-4 text-xs text-center text-gray-500">Formatos aceitos: .xlsx, .xls</p>
+
+          <div className="bg-white rounded shadow max-h-[600px] overflow-y-auto">
+            <h2 className="p-3 bg-gray-100 font-bold text-gray-700 border-b text-sm">
+              Arquivos no Banco
+            </h2>
+            <ul>
+              {reunioes.map((r) => (
+                <li
+                  key={r.id}
+                  onClick={() => selecionarReuniao(r.id)}
+                  className={`p-3 border-b cursor-pointer hover:bg-green-50 transition ${
+                    reuniaoSelecionada?.id === r.id ? 'bg-green-100' : ''
+                  }`}
+                >
+                  <p className="font-bold text-green-800 text-sm truncate">
+                    {r.titulo || 'Sem Título'}
+                  </p>
+                  <p className="text-[10px] text-gray-500">
+                    {r.dataCriacao || r.startTime}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        
+        <div className="md:col-span-3">
+          {loading && (
+            <div className="bg-white p-10 rounded shadow text-center text-gray-400 text-sm">
+              Carregando...
+            </div>
+          )}
+
+          {!loading && reuniaoSelecionada && resumo && (
+            <div className="flex flex-col gap-0 rounded shadow overflow-hidden border border-gray-100">
+
+              
+              <div className="flex items-start justify-between px-4 py-3 bg-white border-b border-gray-100">
+                <div>
+                  <h2 className="text-sm font-bold text-gray-800">{resumo.titulo}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {resumo.horaInicio} – {resumo.horaTermino}
+                    {resumo.tempoMedio ? ` · tempo médio: ${resumo.tempoMedio}` : ''}
+                  </p>
+                </div>
+                <button
+                  onClick={() => exportarCSVLocal(resumo, participantes)}
+                  disabled={exportando}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border
+                             bg-green-50 text-green-700 border-green-200 hover:bg-green-100
+                             disabled:opacity-50 transition-colors"
+                >
+                  {exportando ? 'Exportando...' : '⬇ Exportar CSV'}
+                </button>
+              </div>
+
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-0 bg-white border-b border-gray-100">
+                {[
+                  { label: 'Participantes', valor: resumo.participantesAtendidos },
+                  { label: 'Com câmera', valor: participantes.filter((p) => p.cameraLigada).length },
+                  { label: 'Levantaram mão', valor: participantes.filter((p) => p.levantarMaos).length },
+                  { label: 'Desativaram mudo', valor: participantes.filter((p) => p.desativarMudo).length },
+                ].map(({ label, valor }, i) => (
+                  <div
+                    key={label}
+                    className={`px-4 py-3 bg-gray-50 ${i < 3 ? 'border-r border-gray-100' : ''}`}
+                  >
+                    <p className="text-[10px] uppercase text-gray-400 font-medium">{label}</p>
+                    <p className="text-2xl font-bold text-gray-800 mt-0.5">{valor}</p>
+                  </div>
+                ))}
+              </div>
+
+              
+              <FiltrosParticipantes
+                filtros={filtros}
+                onChange={(novosFiltros) => {
+                  setFiltros(novosFiltros);
+                }}
+                totalVisiveis={totalFiltrado}
+                totalGeral={participantes.length}
+              />
+
+              
+              <div className="overflow-auto max-h-[55vh] bg-white">
+                <TabelaParticipantes
+                  participantes={participantes}
+                  filtros={filtros}
+                  onFiltroChange={setTotalFiltrado}
+                />
+              </div>
+            </div>
+          )}
+
+          {!loading && !reuniaoSelecionada && (
+            <div className="bg-white p-20 rounded shadow text-center text-gray-400">
+              <p>Selecione um arquivo na lateral para ver o resumo e os detalhes dos participantes.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ package br.ufu.gestao;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -11,10 +10,12 @@ import java.util.List;
 public class Reuniao {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String titulo;
     private Integer participantesAtendidos;
-    private LocalDateTime horaInicio;
-    private LocalDateTime horaTermino;
+
+    private String horaInicio; 
+    private String horaTermino;
     private String duracao;
     private String tempoMedioParticipacao;
 

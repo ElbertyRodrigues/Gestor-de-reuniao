@@ -16,7 +16,6 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    // Lê a secret do docker-compose
     @Value("${JWT_SECRET}")
     private String jwtSecret;
 
@@ -24,14 +23,14 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         
-        // Regra solicitada: validar estritamente admin@ufu
+      
         if ("admin@ufu".equals(email)) {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
             
             String token = Jwts.builder()
                     .subject(email)
                     .issuedAt(new Date())
-                    .expiration(new Date(System.currentTimeMillis() + 86400000)) // Token dura 24h
+                    .expiration(new Date(System.currentTimeMillis() + 86400000)) 
                     .signWith(key)
                     .compact();
 

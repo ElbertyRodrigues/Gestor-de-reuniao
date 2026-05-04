@@ -23,7 +23,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if(token != null){
             var login = tokenService.validateToken(token);
             if(login != null){
-                // Se o token for válido, autentica o usuário no contexto do Spring
+    
                 var authentication = new UsernamePasswordAuthenticationToken(login, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

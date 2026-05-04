@@ -1,8 +1,8 @@
 package br.ufu.gestao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "participantes_reuniao")
@@ -10,19 +10,24 @@ import java.time.LocalDateTime;
 public class ParticipanteReuniao {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    @JoinColumn(name = "reuniao_id")
-    private Reuniao reuniao;
 
     private String nome;
-    private LocalDateTime entrada;
-    private LocalDateTime saida;
-    private String duracao;
     private String email;
-    private String upnId;
+    private String upn;
     private String funcao;
+    
+    private String primeiraEntrada;
+    private String ultimaSaida;
+    private String duracaoParticipacao;
+
     private Boolean cameraLigada;
     private Boolean levantarMaos;
     private Boolean desativarMudo;
+    
+    private String voto;
+
+    @ManyToOne
+    @JoinColumn(name = "reuniao_id")
+    @JsonIgnore
+    private Reuniao reuniao;
 }
