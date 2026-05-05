@@ -113,7 +113,6 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      {/* NAVBAR */}
       <nav className="bg-green-900 text-white p-4 flex justify-between items-center shadow-md">
         <h1 className="text-xl font-bold">Gestão UFU - Analisador de Reuniões</h1>
         <button onClick={logout} className="bg-red-600 px-4 py-2 rounded text-sm">
@@ -123,7 +122,6 @@ export const Dashboard = () => {
 
       <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
-        {/* COLUNA ESQUERDA */}
         <div className="md:col-span-1 space-y-4">
           <div className="bg-white p-4 rounded shadow border-t-4 border-green-600">
             <h2 className="font-bold mb-3 text-sm">Importar Novo Relatório</h2>
@@ -165,7 +163,6 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        {/* COLUNA DIREITA */}
         <div className="md:col-span-3">
           {loading && (
             <div className="bg-white p-10 rounded shadow text-center text-gray-400 text-sm">
@@ -176,7 +173,6 @@ export const Dashboard = () => {
           {!loading && reuniaoSelecionada && resumo && (
             <div className="flex flex-col gap-0 rounded shadow overflow-hidden border border-gray-100">
 
-              {/* CABEÇALHO COM EXPORTAR */}
               <div className="flex items-start justify-between px-4 py-3 bg-white border-b border-gray-100">
                 <div>
                   <h2 className="text-sm font-bold text-gray-800">{resumo.titulo}</h2>
@@ -198,11 +194,10 @@ export const Dashboard = () => {
                 </button>
               </div>
 
-              {/* CARDS DE RESUMO */}
               <div className={`grid gap-0 bg-white border-b border-gray-100 ${
                 isVotacao ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4'
               }`}>
-                {/* Cards padrão de presença */}
+
                 {[
                   { label: 'Participantes', valor: resumo.participantesAtendidos },
                   ...(!isVotacao ? [
@@ -220,7 +215,6 @@ export const Dashboard = () => {
                   </div>
                 ))}
 
-                {/* Card de votos — aparece só em votações */}
                 {isVotacao && (
                   <div className="px-4 py-3 bg-gray-50 col-span-2 md:col-span-2">
                     <p className="text-[10px] uppercase text-gray-400 font-medium mb-2">Resultado da votação</p>
@@ -240,7 +234,6 @@ export const Dashboard = () => {
                 )}
               </div>
 
-              {/* FILTROS */}
               <FiltrosParticipantes
                 filtros={filtros}
                 onChange={setFiltros}
@@ -248,7 +241,6 @@ export const Dashboard = () => {
                 totalGeral={participantes.length}
               />
 
-              {/* TABELA */}
               <div className="overflow-auto max-h-[55vh] bg-white">
                 <TabelaParticipantes
                   participantes={participantes}

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import api from '../services/api';
-import { ParticipanteReuniao, ResumoReuniao } from '../types/reuniao';
 
 export function useExport() {
   const [exportando, setExportando] = useState(false);

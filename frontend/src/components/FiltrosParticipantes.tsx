@@ -1,4 +1,3 @@
-import React from 'react';
 import { FiltrosState } from '../types/reuniao';
 
 interface Props {
