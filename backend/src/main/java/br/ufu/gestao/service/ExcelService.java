@@ -73,16 +73,24 @@ private void processarFormsVotacao(Sheet sheet) {
 
         ParticipanteReuniao p = new ParticipanteReuniao();
  
-        Cell completionCell = row.getCell(2);
-        String horario = "";
-        if (completionCell != null && completionCell.getCellType() == CellType.NUMERIC) {
-            horario = new java.text.SimpleDateFormat("dd/MM/yy HH:mm")
-                .format(completionCell.getDateCellValue());
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yy HH:mm");
+
+        Cell startCell = row.getCell(1);
+        String startTime = "";
+        if (startCell != null && startCell.getCellType() == CellType.NUMERIC) {
+            startTime = sdf.format(startCell.getDateCellValue());
         }
+
+        Cell completionCell = row.getCell(2);
+        String completionTime = "";
+        if (completionCell != null && completionCell.getCellType() == CellType.NUMERIC) {
+            completionTime = sdf.format(completionCell.getDateCellValue());
+        }
+
         p.setEmail(getCellValue(row, 3));
         p.setNome(getCellValue(row, 4));
-        p.setPrimeiraEntrada(horario);
-        p.setUltimaSaida(horario);
+        p.setPrimeiraEntrada(startTime);
+        p.setUltimaSaida(completionTime);
         p.setFuncao("Participante");
         p.setVoto(getCellValue(row, ultimaColuna));
         p.setReuniao(reuniao);

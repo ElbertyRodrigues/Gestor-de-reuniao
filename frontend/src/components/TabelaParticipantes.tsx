@@ -33,9 +33,8 @@ const Icone = ({ ativo, title }: { ativo: boolean | null | undefined; title: str
   }
   return (
     <span title={title}
-      className={`inline-flex items-center justify-center w-6 h-6 rounded text-xs font-medium
-        ${ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-400'}`}>
-      {ativo ? '✓' : '✗'}
+      className="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-medium bg-green-50 text-green-700">
+      ✓
     </span>
   );
 };
@@ -127,7 +126,8 @@ export function TabelaParticipantes({ participantes, filtros, onFiltroChange }: 
             <Th col="funcao" label="Função" />
             {isVotacao ? (
               <>
-                <Th col="primeiraEntrada" label="Horário do voto" />
+                <Th col="primeiraEntrada" label="Abertura" />
+                <Th col="ultimaSaida" label="Envio" />
                 <Th col="voto" label="Voto" />
               </>
             ) : (
@@ -157,6 +157,9 @@ export function TabelaParticipantes({ participantes, filtros, onFiltroChange }: 
                 <>
                   <td className="px-3 py-2.5 text-gray-500 tabular-nums whitespace-nowrap">
                     {p.primeiraEntrada || '—'}
+                  </td>
+                  <td className="px-3 py-2.5 text-gray-500 tabular-nums whitespace-nowrap">
+                    {p.ultimaSaida || '—'}
                   </td>
                   <td className="px-3 py-2.5">
                     {p.voto ? <BadgeVoto voto={p.voto} /> : <span className="text-gray-300">—</span>}

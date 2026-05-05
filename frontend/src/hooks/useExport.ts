@@ -29,51 +29,62 @@ export function useExport() {
   };
 
   const exportarCSVLocal = (
-    resumo: ResumoReuniao,
-    participantes: ParticipanteReuniao[]
-  ) => {
-    const cabecalho = [
-      'Nome', 'Email', 'UPN', 'Função',
-      'Entrada', 'Saída', 'Duração',
-      'Câmera', 'Levantou Mão', 'Desativou Mudo',
-    ].join(',');
+      resumo: any,
+      participantes: any[]
+    ) => {
+      const isVotacao = participantes.some((p) => p.voto);
+      const sep = ';';
 
-    const linhas = participantes.map((p) =>
-      [
-        `"${p.nome}"`,
-        `"${p.email}"`,
-        `"${p.upn}"`,
-        `"${p.funcao}"`,
-        p.entrada,
-        p.saida,
-        p.duracao,
-        p.cameraLigada ? 'Sim' : 'Não',
-        p.levantarMaos ? 'Sim' : 'Não',
-        p.desativarMudo ? 'Sim' : 'Não',
-      ].join(',')
-    );
+      const limpar = (val: any): string => {
+        if (val === null || val === undefined || val === 'null') return '';
+        return String(val).replace(/"/g, '""');
+      };
 
-    const metadados = [
-      `"Reunião:","${resumo.titulo}"`,
-      `"Início:","${resumo.horaInicio}"`,
-      `"Término:","${resumo.horaTermino}"`,
-      `"Duração:","${resumo.duracao}"`,
-      `"Tempo médio:","${resumo.tempoMedio}"`,
-      `"Participantes atendidos:","${resumo.participantesAtendidos}"`,
-      '',
-      cabecalho,
-      ...linhas,
-    ].join('\n');
+      const simNao = (val: any): string => {
+        if (val === true) return 'Sim';
+        return '';
+      };
 
-    const bom = '\uFEFF';
-    const blob = new Blob([bom + metadados], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${resumo.titulo.replace(/[^a-z0-9]/gi, '_')}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+      const cabecalho = isVotacao
+        ? ['ID', 'Start time', 'Completion time', 'Email', 'Nome', 'Voto'].join(sep)
+        : ['Nome', 'Email', 'UPN', 'Função', 'Entrada', 'Saída', 'Duração', 'Câmera', 'Levantou Mão', 'Desativou Mudo'].join(sep);
+
+      const linhas = participantes.map((p, index) => {
+        if (isVotacao) {
+          return [
+            index + 1,
+            `"${limpar(p.primeiraEntrada)}"`,
+            `"${limpar(p.ultimaSaida)}"`,
+            `"${limpar(p.email)}"`,
+            `"${limpar(p.nome)}"`,
+            `"${limpar(p.voto)}"`,
+          ].join(sep);
+        }
+        return [
+          `"${limpar(p.nome)}"`,
+          `"${limpar(p.email)}"`,
+          `"${limpar(p.upn)}"`,
+          `"${limpar(p.funcao)}"`,
+          `"${limpar(p.primeiraEntrada)}"`,
+          `"${limpar(p.ultimaSaida)}"`,
+          `"${limpar(p.duracaoParticipacao)}"`,
+          simNao(p.cameraLigada),
+          simNao(p.levantarMaos),
+          simNao(p.desativarMudo),
+        ].join(sep);
+      });
+
+      const conteudo = [cabecalho, ...linhas].join('\n');
+
+      const bom = '\uFEFF';
+      const blob = new Blob([bom + conteudo], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${limpar(resumo.titulo).replace(/[^a-z0-9]/gi, '_')}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
 
   return { exportando, exportarReuniao, exportarCSVLocal };
 }

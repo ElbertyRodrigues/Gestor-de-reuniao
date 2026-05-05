@@ -59,7 +59,7 @@ export const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              placeholder="admin@ufu"
+              placeholder="email autorizado"
             />
           </div>
           <div>
