@@ -13,7 +13,6 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - gestao-network
-
   api:
     build:
       context: ./backend
@@ -30,7 +29,6 @@ services:
     networks:
       - gestao-network
       - shared-proxy
-
   web:
     build:
       context: ./frontend
@@ -46,12 +44,10 @@ services:
     networks:
       - gestao-network
       - shared-proxy
-
 networks:
   gestao-network:
     driver: bridge
   shared-proxy:
     external: true
-
 volumes:
   pgdata:
