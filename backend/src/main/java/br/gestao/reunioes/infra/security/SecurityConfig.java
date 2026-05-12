@@ -37,6 +37,7 @@ public class SecurityConfig {
                 
 
                 .requestMatchers("/auth/login").permitAll()
+                .requestMatchers("/auth/registro").permitAll()
                 
               
                 .requestMatchers("/reunioes/upload").authenticated()

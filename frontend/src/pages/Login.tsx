@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const [modo, setModo] = useState<'login' | 'registro'>('login');
@@ -10,6 +11,8 @@ export const Login = () => {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+
+  const navigate = useNavigate();
 
   const resetForm = () => {
     setEmail('');
@@ -48,6 +51,7 @@ export const Login = () => {
       const endpoint = modo === 'login' ? '/api/auth/login' : '/api/auth/registro';
       const response = await axios.post(endpoint, { email, senha });
       login(response.data.token);
+      navigate('/');
     } catch (err: any) {
       const msg = err?.response?.data?.message;
       if (msg) {

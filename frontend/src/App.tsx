@@ -20,7 +20,12 @@ export const App = () => {
               <Dashboard />
             </PrivateRoute>
           } />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

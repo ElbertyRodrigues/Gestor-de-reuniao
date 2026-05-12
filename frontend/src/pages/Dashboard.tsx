@@ -114,7 +114,7 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <nav className="bg-green-900 text-white p-4 flex justify-between items-center shadow-md">
-        <h1 className="text-xl font-bold">Gestão UFU - Analisador de Reuniões</h1>
+        <h1 className="text-xl font-bold">Gestão - Analisador de Reuniões</h1>
         <button onClick={logout} className="bg-red-600 px-4 py-2 rounded text-sm">
           Sair
         </button>
