@@ -70,7 +70,6 @@ export const Login = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-xl shadow-md w-full max-w-sm p-8">
 
-        {/* Logo / Título */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Gestão de Reuniões</h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -78,7 +77,6 @@ export const Login = () => {
           </p>
         </div>
 
-        {/* Abas Login / Registro */}
         <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
           <button
             type="button"
@@ -104,7 +102,6 @@ export const Login = () => {
           </button>
         </div>
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -156,7 +153,6 @@ export const Login = () => {
             </div>
           )}
 
-          {/* Erro */}
           {erro && (
             <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               <p className="text-xs text-red-600">{erro}</p>

@@ -84,7 +84,6 @@ export const Dashboard = () => {
       }
     : null;
 
-  // Detecta se é votação e monta contagem dinâmica por valor de voto
   const isVotacao = participantes.some((p) => p.voto);
 
   const contagemVotos: Record<string, number> = {};
@@ -96,7 +95,6 @@ export const Dashboard = () => {
     });
   }
 
-  // Cores por palavra-chave no valor do voto
   const corDoVoto = (voto: string): string => {
     const v = voto.toLowerCase();
     if (v.includes('favor') || v.includes('sim') || v.includes('yes') || v.includes('aprov')) {
