@@ -21,4 +21,7 @@ public class Reuniao {
 
     @OneToMany(mappedBy = "reuniao", cascade = CascadeType.ALL)
     private List<ParticipanteReuniao> participantes;
+
+    @Column(name = "usuario_id", nullable = false)
+    private Long usuarioId;
 }
